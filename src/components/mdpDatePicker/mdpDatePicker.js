@@ -283,7 +283,8 @@ module.directive("mdpCalendar", ["$animate", function($animate) {
     }
 }]);
 
-function formatValidator(value, format) {
+function formatValidator(value, format, num) {
+    console.log("mdp-datepicker:", value, format, num);
     return !value || angular.isDate(value) || moment(value, format, true).isValid();
 }
 
@@ -344,6 +345,7 @@ module.directive("mdpDatePicker", ["$mdpDatePicker", "$timeout", function($mdpDa
             "maxDate": "=mdpMaxDate",
             "dateFilter": "=mdpDateFilter",
             "dateFormat": "@mdpFormat",
+            "acceptableDateFormat": "@mdpAcceptableFormat",
             "placeholder": "@mdpPlaceholder",
             "noFloat": "=mdpNoFloat",
             "openOnClick": "=mdpOpenOnClick",
@@ -366,7 +368,9 @@ module.directive("mdpDatePicker", ["$mdpDatePicker", "$timeout", function($mdpDa
                 
                 scope.type = scope.dateFormat ? "text" : "date"
                 scope.dateFormat = scope.dateFormat || "YYYY-MM-DD";
+                scope.acceptableDateFormat = scope.acceptableDateFormat || "YYYY-MM-DD";
                 scope.model = ngModel;
+                console.log("post on element:", scope);
                 
                 scope.isError = function() {
                     return !ngModel.$pristine && !!ngModel.$invalid;
@@ -382,7 +386,7 @@ module.directive("mdpDatePicker", ["$mdpDatePicker", "$timeout", function($mdpDa
                 });
                 
                 ngModel.$validators.format = function(modelValue, viewValue) {
-                    return formatValidator(viewValue, scope.dateFormat);
+                    return formatValidator(viewValue, scope.acceptableDateFormat, 1);
                 };
                 
                 ngModel.$validators.minDate = function(modelValue, viewValue) {
@@ -476,12 +480,14 @@ module.directive("mdpDatePicker", ["$mdpDatePicker", "$timeout", function($mdpDa
             "maxDate": "@max",
             "dateFilter": "=mdpDateFilter",
             "dateFormat": "@mdpFormat",
+            "acceptableDateFormat": "@mdpAcceptableFormat",
         },
         link: function(scope, element, attrs, ngModel, $transclude) {
+            console.log("post on link:", scope);
             scope.dateFormat = scope.dateFormat || "YYYY-MM-DD";
             
             ngModel.$validators.format = function(modelValue, viewValue) {
-                return formatValidator(viewValue, scope.format);
+                return formatValidator(viewValue, scope.format, 2);
             };
             
             ngModel.$validators.minDate = function(modelValue, viewValue) {
